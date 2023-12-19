@@ -68,7 +68,6 @@ public class WeatherService {
             if (metrics.isEmpty()) {
                 throw new WeatherException("No weather metrics found for the specified criteria.");
             }
-
             return metrics;
         }
     }

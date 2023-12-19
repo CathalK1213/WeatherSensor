@@ -1,72 +1,134 @@
 # Weather Sensor API
 
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/technologies/javase/17-relnote-issues.html)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green.svg)](https://spring.io/projects/spring-boot)
+
 ## Overview
 
-The Weather Sensor API is a Spring Boot application that manages weather metrics captured by various sensors. The API provides endpoints for adding new weather metrics and querying existing metrics based on specified parameters.
+The Weather Sensor API is a Spring Boot application that provides a RESTful API for handling weather-related operations.
+It allows you to add weather metrics to a database and query metrics based on various parameters.
+
+## Features
+
+- Add new weather metrics
+- Query weather metrics based on sensor ID, metric type, and date range
+- Calculate statistical values (min, max, sum, average) for weather metrics
+
+## Table of Contents
+
+- [Weather Sensor API](#weather-sensor-api)
+    - [Overview](#overview)
+    - [Features](#features)
+    - [Table of Contents](#table-of-contents)
+    - [Getting Started](#getting-started)
+        - [Prerequisites](#prerequisites)
+        - [Running Locally](#running-locally)
+        - [Running with Docker](#running-with-docker)
+    - [Functionality](#functionality)
+        - [Add Weather Metric](#add-weather-metric)
+        - [Query Weather Metrics](#query-weather-metrics)
+    - [Testing with Postman](#testing-with-postman)
+    - [Configuration](#configuration)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java Development Kit (JDK) 11 or later
-- Maven (for building and managing dependencies)
-- PostgreSQL database (configured in `application.properties`)
-- [Postman](https://www.postman.com/) (for testing API calls)
+- Java 17
+- Maven
+- Docker 
 
-### Build and Run
+### Running Locally
 
-1. Clone the repository:
+1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/CathalK1213/weather-sensor-api.git
-    cd weather-sensor-api
-    ```
+   ```bash
+   git clone https://github.com/your-username/weather-sensor-api.git
 
-2. Build the project:
+2. **Navigate to the project directory:**
 
-    ```bash
-    mvn clean install
-    ```
+   ```bash
+   cd weather-sensor-api
 
-3. Run the application:
+3. **Build the project:**
 
-    ```bash
-    mvn spring-boot:run
-    ```
+   ```bash
+   mvn clean package
 
-   The application will be accessible at [http://localhost:8080](http://localhost:8080).
+4. **Run the Application**
+   ```bash
+   java -jar target/weather-api.jar
 
-### Add Weather Metric
+### Running with Docker
+
+1. **Navigate to the project directory:**
+
+   ```bash
+   cd weather-sensor-api
+
+2. **Spin Up PostgreSQL Container**
+
+   ```bash
+   docker run --name my-postgres-container -e POSTGRES_USER=my_user -e POSTGRES_PASSWORD=my_password -e POSTGRES_DB=my_weather_db -d -p 5432:5432 postgres:alpine
+
+3. **Build Docker Image:**
+
+   ```bash
+   docker build -t weather-api .
+
+4. **Run the Docker Container**
+
+   ```bash
+    docker run -p 8080:8080 -e DB_HOST=my-postgres-host -e DB_PORT=5432 -e DB_NAME=my_weather_db -e DB_USERNAME=my_user                   
+   -e DB_PASSWORD=my_password weather-api
+   ```
+
+In this version, the Docker run command is presented in a single line for clarity, and a note is added to inform users
+about the need to replace the placeholders with their specific configuration values.
+
+### Functionality
+
+#### Add Weather Metric
 
 - **Endpoint:** `POST /api/weather/add`
 - **Description:** Adds a new weather metric to the database.
 - **Request Example:**
 
     ```bash
-    curl -X POST -H "Content-Type: application/json" -d '{"sensorId": "sensor1", "metric": "temperature", "value": 25.5, "timestamp": "2023-01-01T12:00:00"}' http://localhost:8080/api/weather/add
+    curl --location 'http://localhost:8080/api/weather/add' \
+    --header 'Content-Type: application/json' \
+    --data '    {
+    "sensorId": "sensor2",
+    "metric": "humidity",
+    "value": 60.0,
+    "timestamp": "2023-01-01T12:10:00"
+    }'
     ```
 
-### Query Weather Metrics
+#### Query Weather Metrics
 
 - **Endpoint:** `GET /api/weather/query`
 - **Description:** Retrieves and calculates statistical values for weather metrics based on specified parameters.
 - **Request Examples:**
 
     ```bash
-    # Example 1: Query Average Temperature for a Sensor
-    curl -X GET "http://localhost:8080/api/weather/query?sensorId=sensor1&metric=temperature&statistic=average&start=2023-01-01T00:00:00&end=2023-01-08T00:00:00"
-    ```
-
-    ```bash
-    # Example 2: Query Min Humidity for a Sensor
-    curl -X GET "http://localhost:8080/api/weather/query?sensorId=sensor2&metric=humidity&statistic=min&start=2023-01-01T00:00:00&end=2023-01-08T00:00:00"
+    # Example 1: Query 
+    curl --location 'http://localhost:8080/api/weather/query?sensorId=sensor2&metric=humidity&statistic=sum&start=2023-01-01T00%3A00%3A00&end=2023-01-31T00%3A00%3A00'
     ```
 
 ## Testing with Postman
 
 1. Download and install [Postman](https://www.postman.com/).
 
-2. Import the provided Postman collection: [WeatherSensorAPI.postman_collection.json](postman/WeatherSensorAPI.postman_collection.json).
+2. Import the provided Postman
+   collection: [WeatherSensorAPI.postman_collection.json](postman/WeatherSensorAPI.postman_collection.json).
+
+    - Open Postman.
+    - Click on the "Import" button in the top left corner.
+    - Choose the "Link" tab.
+    - Paste the URL of the Postman collection
+      file: [WeatherSensorAPI.postman_collection.json](postman/WeatherSensorAPI.postman_collection.json).
+    - Click "Import" to add the collection to your Postman workspace.
 
 3. Open the imported collection in Postman.
 
